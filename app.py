@@ -5,6 +5,7 @@ import json
 from flask_cors import CORS
 import requests
 import matplotlib.pyplot as plt
+import pickle
 
 
 app = Flask(__name__)
@@ -38,7 +39,26 @@ def hello_world():
     data = {"data": img,"mode":mode} 
     encodedNumpyData = json.dumps(data, cls=NumpyArrayEncoder)
     return getpred(encodedNumpyData)
-    
+@app.route('/heart', methods=["POST"])
+def heartfunction():
+    age = int(request.form['age'])
+    sex = int(request.form['sex'])
+    cp = int(request.form['cp'])
+    trestbps = int(request.form['trestbps'])
+    chol = int(request.form['chol'])
+    fbs = int(request.form['fbs'])
+    restecg = int(request.form['restecg'])
+    thalach = int(request.form['thalach'])
+    exang = int(request.form['exang'])
+    oldpeak = float(request.form['oldpeak'])
+    slope = int(request.form['slope'])
+    ca = int(request.form['ca'])
+    thal = int(request.form['thal'])
+    model = pickle.load(open('model1.pkl', 'rb'))
+    print("yahan tak aagaye")
+    labels = {0: 'No Heart Disease', 1: "Heart Disease Present"}
+    y = model.predict([[age, sex, cp, trestbps, chol, fbs,restecg, thalach, exang, oldpeak, slope, ca, thal]])
+    return json.dumps(labels[int(y)])
 
 if __name__ == "__main__":
     app.run()
